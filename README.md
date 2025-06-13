@@ -111,14 +111,24 @@ This will start the server on `http://localhost:8000`. The `--reload` flag enabl
 
 ### 5.2. Docker
 
-A `Dockerfile` is provided for containerization. To build and run the Docker image:
+Complete Docker configuration is provided for both development and production environments:
 
+**Quick Start:**
 ```bash
-docker build -t cue-backend .
-docker run -p 8000:8000 --env-file ./.env cue-backend
+# Development (includes PostgreSQL, Redis, Nginx)
+docker-compose up -d
+
+# Production (connects to AWS RDS)
+docker-compose -f docker-compose.production.yml up -d
 ```
 
-**Note:** Ensure your `.env` file is correctly configured for the environment you are deploying to.
+**Available Docker Files:**
+- `Dockerfile` - Development image with hot reloading
+- `Dockerfile.production` - Optimized production build
+- `docker-compose.yml` - Full development stack
+- `docker-compose.production.yml` - Production deployment
+
+For complete Docker setup, deployment guides, and architecture details, see **[DOCKER_DEPLOYMENT_GUIDE.md](DOCKER_DEPLOYMENT_GUIDE.md)**.
 
 ## 6. API Endpoints
 
