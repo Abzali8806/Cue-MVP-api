@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  # FastAPI Backend Application
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      # Environment will be loaded from .env file or environment variables
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - DATABASE_URL=${DATABASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION:-us-east-1}
+      - AZURE_SPEECH_KEY=${AZURE_SPEECH_KEY}
+      - AZURE_SPEECH_REGION=${AZURE_SPEECH_REGION}
+    volumes:
+      # Mount logs directory for persistent logging
+      - ./logs:/app/logs
+    restart: unless-stopped
+    depends_on:
+      - db
+    networks:
+      - cue-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # PostgreSQL Database (for local development/testing)
+  # In production, use AWS RDS instead
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: cue_development
+      POSTGRES_USER: cue_user
+      POSTGRES_PASSWORD: cue_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/init:/docker-entrypoint-initdb.d
+    restart: unless-stopped
+    networks:
+      - cue-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cue_user -d cue_development"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis (optional - for caching, sessions, rate limiting)
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - cue-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  # Nginx (optional - for production load balancing and SSL termination)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+    depends_on:
+      - app
+    restart: unless-stopped
+    networks:
+      - cue-network
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  cue-network:
+    driver: bridge
