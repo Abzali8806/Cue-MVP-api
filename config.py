@@ -11,8 +11,11 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
     
-    # Database settings
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://user:password@localhost/cue_db")
+    # Database settings - AWS PostgreSQL RDS
+    # Replace with your AWS RDS PostgreSQL connection string
+    # Format: postgresql://username:password@rds-endpoint:5432/database_name
+    # Example: postgresql://cueuser:yourpassword@cue-db.cluster-xxxxx.us-east-1.rds.amazonaws.com:5432/cue_production
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://REPLACE_WITH_AWS_RDS_CONNECTION_STRING")
     
     # JWT settings
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "jwt-secret-key-change-in-production")

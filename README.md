@@ -54,8 +54,11 @@ All sensitive information and configuration settings are managed via environment
 ```dotenv
 # .env.example content (copy to .env and fill in)
 
-# Database Configuration (PostgreSQL)
-DATABASE_URL="postgresql+psycopg2://user:password@host:port/dbname"
+# AWS RDS PostgreSQL Database Configuration
+# Replace with your AWS RDS PostgreSQL connection details
+# Format: postgresql+psycopg2://username:password@rds-endpoint:port/database_name
+# Example: postgresql+psycopg2://cueuser:yourpassword@cue-db.cluster-xxxxx.us-east-1.rds.amazonaws.com:5432/cue_production
+DATABASE_URL="postgresql+psycopg2://YOUR_RDS_USERNAME:YOUR_RDS_PASSWORD@YOUR_RDS_ENDPOINT:5432/YOUR_DATABASE_NAME"
 
 # JWT Secret Key (for authentication)
 SECRET_KEY="your_super_secret_jwt_key_here" # GENERATE A STRONG, RANDOM KEY
