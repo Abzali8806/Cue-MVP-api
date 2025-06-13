@@ -8,7 +8,7 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     # Application settings
-    ENVIRONMENT: str = "production"
+    ENVIRONMENT: str = "development"
     SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
     
     # Database settings
