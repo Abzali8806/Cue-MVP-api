@@ -1,0 +1,17 @@
+# Override file for local development
+# Copy this to docker-compose.override.yml and customize as needed
+version: '3.8'
+
+services:
+  app:
+    environment:
+      - ENVIRONMENT=development
+      - DATABASE_URL=postgresql://cue_user:cue_password@db:5432/cue_development
+    volumes:
+      # Mount source code for hot reloading during development
+      - .:/app
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  db:
+    ports:
+      - "5433:5432"  # Use different port to avoid conflicts
