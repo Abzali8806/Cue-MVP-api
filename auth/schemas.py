@@ -18,11 +18,15 @@ class UserProfile(BaseModel):
     """User profile response schema."""
     id: int
     email: str
-    name: str
-    oauth_provider: str
-    profile_picture: Optional[str] = None
-    is_active: bool
-    created_at: datetime
+    firstName: Optional[str] = None
+    lastName: Optional[str] = None
+    profileImageUrl: Optional[str] = None
+    displayName: Optional[str] = None
+    provider: str
+    providerId: str
+    rememberMe: Optional[bool] = False
+    createdAt: datetime
+    updatedAt: datetime
     
     class Config:
         from_attributes = True

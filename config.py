@@ -32,6 +32,9 @@ class Settings(BaseSettings):
     GITHUB_CLIENT_ID: str = os.getenv("GITHUB_CLIENT_ID", "YOUR_GITHUB_CLIENT_ID_HERE")
     GITHUB_CLIENT_SECRET: str = os.getenv("GITHUB_CLIENT_SECRET", "YOUR_GITHUB_CLIENT_SECRET_HERE")
     
+    # Backend URL for OAuth redirects
+    BACKEND_URL: str = os.getenv("BACKEND_URL", "http://localhost:8000")
+    
     # CORS settings - UPDATE WITH YOUR FRONTEND DOMAINS
     # Add your production frontend URLs here
     ALLOWED_ORIGINS: List[str] = [

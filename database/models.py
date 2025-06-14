@@ -15,10 +15,13 @@ class User(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     email = Column(String(255), unique=True, index=True, nullable=False)
-    name = Column(String(255), nullable=False)
+    first_name = Column(String(255), nullable=True)
+    last_name = Column(String(255), nullable=True)
+    display_name = Column(String(255), nullable=True)
     oauth_provider = Column(String(50), nullable=False)  # 'google' or 'github'
     oauth_id = Column(String(255), nullable=False)  # ID from OAuth provider
     profile_picture = Column(String(500), nullable=True)
+    remember_me = Column(Boolean, default=False)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

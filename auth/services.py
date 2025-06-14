@@ -94,7 +94,7 @@ class AuthService:
                     "client_secret": settings.GOOGLE_CLIENT_SECRET,
                     "code": code,
                     "grant_type": "authorization_code",
-                    "redirect_uri": "postmessage"  # For client-side flow
+                    "redirect_uri": f"{settings.BACKEND_URL}/auth/google/callback"
                 }
             )
             if response.status_code != 200:
@@ -109,7 +109,8 @@ class AuthService:
                 data={
                     "client_id": settings.GITHUB_CLIENT_ID,
                     "client_secret": settings.GITHUB_CLIENT_SECRET,
-                    "code": code
+                    "code": code,
+                    "redirect_uri": f"{settings.BACKEND_URL}/auth/github/callback"
                 },
                 headers={"Accept": "application/json"}
             )
@@ -169,14 +170,26 @@ class AuthService:
         
         if user:
             # Update user info if needed
-            user.name = name
+            if name:
+                # Split name into first and last name
+                name_parts = name.split(' ', 1)
+                user.first_name = name_parts[0] if name_parts else None
+                user.last_name = name_parts[1] if len(name_parts) > 1 else None
+                user.display_name = name
             user.profile_picture = profile_picture
             user.updated_at = datetime.utcnow()
         else:
+            # Split name into first and last name
+            name_parts = name.split(' ', 1) if name else []
+            first_name = name_parts[0] if name_parts else None
+            last_name = name_parts[1] if len(name_parts) > 1 else None
+            
             # Create new user
             user = User(
                 email=email,
-                name=name,
+                first_name=first_name,
+                last_name=last_name,
+                display_name=name,
                 oauth_provider=oauth_provider,
                 oauth_id=oauth_id,
                 profile_picture=profile_picture
