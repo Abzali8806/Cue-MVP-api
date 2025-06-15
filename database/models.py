@@ -22,6 +22,14 @@ class User(Base):
     oauth_id = Column(String(255), nullable=False)  # ID from OAuth provider
     profile_picture = Column(String(500), nullable=True)
     remember_me = Column(Boolean, default=False)
+    
+    # Onboarding fields
+    company_name = Column(String(255), nullable=True)
+    industry = Column(String(100), nullable=True)
+    role_at_company = Column(String(100), nullable=True)
+    purpose_use_case = Column(Text, nullable=True)
+    onboarding_completed = Column(Boolean, default=False)
+    
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())

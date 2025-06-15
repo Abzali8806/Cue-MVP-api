@@ -25,11 +25,39 @@ class UserProfile(BaseModel):
     provider: str
     providerId: str
     rememberMe: Optional[bool] = False
+    
+    # Onboarding fields
+    companyName: Optional[str] = None
+    industry: Optional[str] = None
+    roleAtCompany: Optional[str] = None
+    purposeUseCase: Optional[str] = None
+    onboardingCompleted: Optional[bool] = False
+    
     createdAt: datetime
     updatedAt: datetime
     
     class Config:
         from_attributes = True
+
+class OnboardingData(BaseModel):
+    """Onboarding form data schema."""
+    firstName: str
+    lastName: str
+    companyName: str
+    industry: str
+    roleAtCompany: str
+    purposeUseCase: Optional[str] = None
+
+class ProfileUpdateData(BaseModel):
+    """Profile update data schema."""
+    displayName: Optional[str] = None
+    rememberMe: Optional[bool] = None
+    firstName: Optional[str] = None
+    lastName: Optional[str] = None
+    companyName: Optional[str] = None
+    industry: Optional[str] = None
+    roleAtCompany: Optional[str] = None
+    purposeUseCase: Optional[str] = None
 
 class GoogleUserInfo(BaseModel):
     """Google OAuth user information schema."""
