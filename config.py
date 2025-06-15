@@ -39,7 +39,7 @@ class Settings(BaseSettings):
     # Add your production frontend URLs here
     ALLOWED_ORIGINS: List[str] = [
         "https://cue-tracker-abzali20.replit.app",  # Your current frontend
-        "http://localhost:3000",  # Local development
+        "http://localhost:5001",  # Local development (docker-compose)
         "http://localhost:5000",  # Local API
         "http://127.0.0.1:3000",
         "http://127.0.0.1:5000"
