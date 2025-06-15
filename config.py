@@ -15,13 +15,17 @@ class Settings(BaseSettings):
     # Replace with your AWS RDS PostgreSQL connection string
     # Format: postgresql://username:password@rds-endpoint:5432/database_name
     # Example: postgresql://cueuser:yourpassword@cue-db.cluster-xxxxx.us-east-1.rds.amazonaws.com:5432/cue_production
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://REPLACE_WITH_AWS_RDS_CONNECTION_STRING")
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:YOUR_DB_PASSWORD@db.YOUR_PROJECT_REF.supabase.co:5432/postgres")
+    
+    # Supabase settings
+    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "https://xyxkjzblcfsrwsimlasm.supabase.co")
+    SUPABASE_API_KEY: str = os.getenv("SUPABASE_API_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5eGtqemJsY2ZzcndzaW1sYXNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NzgzOTEsImV4cCI6MjA2NTU1NDM5MX0.t9Yz1O6AmkIDJ83fHpU5gFux8p1v1rcImvyqE4rWct4")
     
     # JWT settings - REPLACE WITH SECURE RANDOM KEYS
     # Generate strong random keys for production: python -c "import secrets; print(secrets.token_urlsafe(32))"
-    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "REPLACE_WITH_SECURE_JWT_SECRET_KEY")
+    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "YOUR_SUPABASE_JWT_SECRET_HERE")
     JWT_ALGORITHM: str = "HS256"
-    JWT_EXPIRATION_HOURS: int = 24
+    JWT_EXPIRATION_HOURS: int = 1 # 3600 seconds = 1 hour
     
     # OAuth settings - CONFIGURE WITH YOUR OAUTH APP CREDENTIALS
     # Get from: Google Cloud Console > APIs & Services > Credentials
