@@ -11,19 +11,22 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     SECRET_KEY: str = os.getenv("SECRET_KEY", "your-secret-key-change-in-production")
     
-    # Database settings - AWS PostgreSQL RDS
-    # Replace with your AWS RDS PostgreSQL connection string
-    # Format: postgresql://username:password@rds-endpoint:5432/database_name
-    # Example: postgresql://cueuser:yourpassword@cue-db.cluster-xxxxx.us-east-1.rds.amazonaws.com:5432/cue_production
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:YOUR_DB_PASSWORD@db.YOUR_PROJECT_REF.supabase.co:5432/postgres")
+    # Database settings - Local PostgreSQL for Docker Compose
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://cue_user:cue_password@db:5432/cue_development")
     
-    # Supabase settings
+    # Redis settings - Local Redis for Docker Compose
+    REDIS_URL: str = os.getenv("REDIS_URL", "redis://redis:6379/0")
+    REDIS_HOST: str = os.getenv("REDIS_HOST", "redis")
+    REDIS_PORT: int = int(os.getenv("REDIS_PORT", "6379"))
+    REDIS_DB: int = int(os.getenv("REDIS_DB", "0"))
+    
+    # Supabase settings (for production if needed)
     SUPABASE_URL: str = os.getenv("SUPABASE_URL", "https://xyxkjzblcfsrwsimlasm.supabase.co")
     SUPABASE_API_KEY: str = os.getenv("SUPABASE_API_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5eGtqemJsY2ZzcndzaW1sYXNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NzgzOTEsImV4cCI6MjA2NTU1NDM5MX0.t9Yz1O6AmkIDJ83fHpU5gFux8p1v1rcImvyqE4rWct4")
     
     # JWT settings - REPLACE WITH SECURE RANDOM KEYS
     # Generate strong random keys for production: python -c "import secrets; print(secrets.token_urlsafe(32))"
-    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "YOUR_SUPABASE_JWT_SECRET_HERE")
+    JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "your-jwt-secret-key-change-in-production")
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRATION_HOURS: int = 1 # 3600 seconds = 1 hour
     

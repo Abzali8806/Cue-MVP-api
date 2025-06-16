@@ -7,14 +7,20 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import uvicorn
+import logging
 
 from config import settings
 from database.database import engine, Base
+from database.redis_client import redis_manager
 from auth.router import router as auth_router
 from workflows.router import router as workflows_router
 from validation.router import router as validation_router
 from speech.router import router as speech_router
 from core.exceptions import CustomException
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
@@ -45,11 +51,60 @@ async def custom_exception_handler(request, exc):
         content={"detail": exc.detail}
     )
 
+# Application startup event
+@app.on_event("startup")
+async def startup_event():
+    """Initialize connections on startup."""
+    try:
+        # Initialize Redis connection
+        redis_manager.connect()
+        logger.info("Application startup completed successfully")
+    except Exception as e:
+        logger.error(f"Error during startup: {e}")
+
+# Application shutdown event
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Clean up connections on shutdown."""
+    try:
+        # Close Redis connection
+        redis_manager.disconnect()
+        logger.info("Application shutdown completed successfully")
+    except Exception as e:
+        logger.error(f"Error during shutdown: {e}")
+
 # Health check endpoint
 @app.get("/health")
 async def health_check():
     """Health check endpoint to verify API service is running."""
-    return {"status": "ok"}
+    try:
+        # Test database connection
+        from database.database import SessionLocal
+        db = SessionLocal()
+        db.execute("SELECT 1")
+        db.close()
+        
+        # Test Redis connection
+        from database.redis_client import get_redis
+        redis_client = get_redis()
+        redis_client.ping()
+        
+        return {
+            "status": "ok",
+            "database": "connected",
+            "redis": "connected",
+            "environment": settings.ENVIRONMENT
+        }
+    except Exception as e:
+        logger.error(f"Health check failed: {e}")
+        return JSONResponse(
+            status_code=503,
+            content={
+                "status": "error",
+                "message": str(e),
+                "environment": settings.ENVIRONMENT
+            }
+        )
 
 # Include routers for different modules
 app.include_router(auth_router, tags=["Authentication"])
