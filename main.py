@@ -22,8 +22,8 @@ from core.exceptions import CustomException
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Create database tables
-Base.metadata.create_all(bind=engine)
+# Create database tables using Alembic migrations
+# Base.metadata.create_all(bind=engine)
 
 # Create FastAPI app instance
 app = FastAPI(
