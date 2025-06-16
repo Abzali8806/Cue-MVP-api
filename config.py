@@ -20,10 +20,6 @@ class Settings(BaseSettings):
     REDIS_PORT: int = int(os.getenv("REDIS_PORT", "6379"))
     REDIS_DB: int = int(os.getenv("REDIS_DB", "0"))
     
-    # Supabase settings (for production if needed)
-    SUPABASE_URL: str = os.getenv("SUPABASE_URL", "https://xyxkjzblcfsrwsimlasm.supabase.co")
-    SUPABASE_API_KEY: str = os.getenv("SUPABASE_API_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh5eGtqemJsY2ZzcndzaW1sYXNtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk5NzgzOTEsImV4cCI6MjA2NTU1NDM5MX0.t9Yz1O6AmkIDJ83fHpU5gFux8p1v1rcImvyqE4rWct4")
-    
     # JWT settings - REPLACE WITH SECURE RANDOM KEYS
     # Generate strong random keys for production: python -c "import secrets; print(secrets.token_urlsafe(32))"
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "your-jwt-secret-key-change-in-production")

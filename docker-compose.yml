@@ -8,10 +8,14 @@ services:
       - "8000:8000"
     environment:
       # Environment will be loaded from .env file or environment variables
-      - ENVIRONMENT=${ENVIRONMENT:-production}
-      - DATABASE_URL=${DATABASE_URL}
-      - SECRET_KEY=${SECRET_KEY}
-      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - ENVIRONMENT=development
+      - DATABASE_URL=postgresql://cue_user:cue_password@db:5432/cue_development
+      - REDIS_URL=redis://redis:6379/0
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - SECRET_KEY=${SECRET_KEY:-your-secret-key-change-in-production}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-your-jwt-secret-key-change-in-production}
       - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
       - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
       - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
@@ -27,6 +31,7 @@ services:
     restart: unless-stopped
     depends_on:
       - db
+      - redis
     networks:
       - cue-network
     healthcheck:
