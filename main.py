@@ -108,7 +108,7 @@ async def health_check():
         )
 
 # Include routers for different modules
-app.include_router(auth_router, tags=["Authentication"])
+app.include_router(auth_router, prefix="/auth", tags=["Authentication"])
 app.include_router(workflows_router, prefix="/workflows", tags=["Workflows"])
 app.include_router(validation_router, prefix="/code", tags=["Code Validation"])
 app.include_router(speech_router, prefix="/speech", tags=["Speech-to-Text"])

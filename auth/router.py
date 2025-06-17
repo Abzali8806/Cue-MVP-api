@@ -14,6 +14,35 @@ from config import settings
 
 router = APIRouter()
 
+@router.get("/google/login")
+async def google_oauth_login():
+    """
+    Initiate Google OAuth flow by redirecting to Google's authorization server.
+    """
+    google_auth_url = (
+        "https://accounts.google.com/o/oauth2/v2/auth"
+        f"?client_id={settings.GOOGLE_CLIENT_ID}"
+        f"&redirect_uri={settings.BACKEND_URL}/auth/google/callback"
+        "&response_type=code"
+        "&scope=openid email profile"
+        "&access_type=offline"
+        "&prompt=consent"
+    )
+    return RedirectResponse(url=google_auth_url)
+
+@router.get("/github/login")
+async def github_oauth_login():
+    """
+    Initiate GitHub OAuth flow by redirecting to GitHub's authorization server.
+    """
+    github_auth_url = (
+        "https://github.com/login/oauth/authorize"
+        f"?client_id={settings.GITHUB_CLIENT_ID}"
+        f"&redirect_uri={settings.BACKEND_URL}/auth/github/callback"
+        "&scope=user:email"
+    )
+    return RedirectResponse(url=github_auth_url)
+
 @router.get("/google/callback")
 async def google_oauth_callback(
     code: str = Query(..., description="Authorization code from Google"),
