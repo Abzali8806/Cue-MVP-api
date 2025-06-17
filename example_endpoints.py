@@ -14,8 +14,17 @@ import redis
 router = APIRouter()
 
 @router.get("/example/cache-test")
-async def cache_test(redis_client: redis.Redis = Depends(get_redis)):
+async def cache_test(redis_client = Depends(get_redis)):
     """Test Redis connection and basic operations."""
+    if redis_client is None:
+        return {
+            "redis_status": "not_available",
+            "message": "Redis caching is not available in this environment",
+            "basic_test": None,
+            "json_test": None,
+            "cache_exists": False
+        }
+    
     try:
         # Test basic Redis operations
         redis_client.set("test_key", "Hello Redis!", ex=60)
@@ -74,19 +83,24 @@ async def database_test(db: Session = Depends(get_db)):
 @router.get("/example/combined-test")
 async def combined_test(
     db: Session = Depends(get_db),
-    redis_client: redis.Redis = Depends(get_redis)
+    redis_client = Depends(get_redis)
 ):
     """Test both PostgreSQL and Redis working together."""
     try:
-        # Check cache first
+        # Check cache first (if Redis is available)
         cache_key = "user_stats"
-        cached_stats = RedisCache.get_json(cache_key)
+        cached_stats = None
+        cache_available = redis_client is not None
+        
+        if cache_available:
+            cached_stats = RedisCache.get_json(cache_key)
         
         if cached_stats:
             return {
                 "source": "cache",
                 "data": cached_stats,
-                "cache_hit": True
+                "cache_hit": True,
+                "cache_available": cache_available
             }
         
         # If not in cache, query database
@@ -103,8 +117,9 @@ async def combined_test(
             "generated_at": "2024-01-01T00:00:00"
         }
         
-        # Cache the result for 5 minutes
-        RedisCache.set_json(cache_key, stats, expire=300)
+        # Cache the result for 5 minutes (if Redis is available)
+        if cache_available:
+            RedisCache.set_json(cache_key, stats, expire=300)
         
         return {
             "source": "database",
@@ -119,9 +134,18 @@ async def combined_test(
 @router.post("/example/rate-limit-test")
 async def rate_limit_test(
     user_id: str,
-    redis_client: redis.Redis = Depends(get_redis)
+    redis_client = Depends(get_redis)
 ):
     """Example of using Redis for rate limiting."""
+    if redis_client is None:
+        return {
+            "allowed": True,
+            "message": "Rate limiting not available (Redis not connected)",
+            "requests_count": 1,
+            "limit": "unlimited",
+            "window": "N/A"
+        }
+    
     try:
         rate_limit_key = f"rate_limit:user:{user_id}"
         current_requests = redis_client.get(rate_limit_key)
@@ -136,7 +160,7 @@ async def rate_limit_test(
                 "window": "1 minute"
             }
         
-        current_count = int(current_requests)
+        current_count = int(str(current_requests))
         if current_count >= 10:  # Rate limit: 10 requests per minute
             return {
                 "allowed": False,
@@ -159,8 +183,15 @@ async def rate_limit_test(
         raise HTTPException(status_code=500, detail=f"Rate limit error: {str(e)}")
 
 @router.delete("/example/clear-cache")
-async def clear_cache(redis_client: redis.Redis = Depends(get_redis)):
+async def clear_cache(redis_client = Depends(get_redis)):
     """Clear test cache entries."""
+    if redis_client is None:
+        return {
+            "message": "Cache clearing not available (Redis not connected)",
+            "deleted_keys": 0,
+            "keys": []
+        }
+    
     try:
         keys_to_delete = ["test_key", "test_json", "user_stats"]
         deleted_count = 0

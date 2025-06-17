@@ -112,6 +112,8 @@ class RedisCache:
         """Delete key from Redis."""
         try:
             redis_client = get_redis()
+            if redis_client is None:
+                return False
             return bool(redis_client.delete(key))
         except Exception as e:
             logger.error(f"Error deleting Redis key {key}: {e}")
@@ -122,6 +124,8 @@ class RedisCache:
         """Check if key exists in Redis."""
         try:
             redis_client = get_redis()
+            if redis_client is None:
+                return False
             return bool(redis_client.exists(key))
         except Exception as e:
             logger.error(f"Error checking Redis key {key}: {e}")
@@ -132,6 +136,8 @@ class RedisCache:
         """Set string value with TTL."""
         try:
             redis_client = get_redis()
+            if redis_client is None:
+                return False
             redis_client.setex(key, ttl, value)
             return True
         except Exception as e:
@@ -143,7 +149,10 @@ class RedisCache:
         """Increment a counter in Redis."""
         try:
             redis_client = get_redis()
-            return redis_client.incrby(key, amount)
+            if redis_client is None:
+                return None
+            result = redis_client.incrby(key, amount)
+            return result
         except Exception as e:
             logger.error(f"Error incrementing Redis key {key}: {e}")
             return None
